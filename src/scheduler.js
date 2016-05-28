@@ -16,12 +16,8 @@
  */
 'use strict';
 
-const fs = require('fs');
-
-const log = require('./lib/log.js');
-const screenshotDump = require('./lib/screenshot-page.js');
+const assets = require('./lib/save-assets.js');
 const Gather = require('./gatherers/gather.js');
-const stringify = require('json-stringify-safe');
 
 function loadPage(driver, gatherers, options) {
   const loadPage = options.flags.loadPage;
@@ -84,32 +80,6 @@ function phaseRunner(gatherers) {
       return chain.then(_ => gatherFun(gatherer));
     }, Promise.resolve());
   };
-}
-
-function saveArtifacts(artifacts) {
-  const artifactsFilename = 'artifacts.log';
-  fs.writeFileSync(artifactsFilename, stringify(artifacts));
-  log.log('info', 'artifacts file saved to disk', artifactsFilename);
-}
-
-function getAssetFilename(assetName, url) {
-  const date = new Date();
-  const hostname = url.match(/^.*?\/\/(.*?)(:?\/|$)/)[1];
-  const filenamePrefix = hostname + '_' + date.toISOString();
-  return (filenamePrefix + assetName).replace(/[\/\?<>\\:\*\|":]/g, '-');
-}
-
-function saveAssets(options, artifacts) {
-  const url = options.url;
-  const traceFilename = getAssetFilename('.trace.json', url);
-
-  fs.writeFileSync(traceFilename, stringify(artifacts.traceContents, null, 2));
-  log.log('info', 'trace file saved to disk', traceFilename);
-
-  const screenshotsFilename = getAssetFilename('.screenshots.html', url);
-  const html = screenshotDump(screenshotsFilename, artifacts.screenshots);
-  fs.writeFileSync(screenshotsFilename, html);
-  log.log('info', 'screenshots saved to disk', screenshotsFilename);
 }
 
 function shouldRunPass(gatherers, phases) {
@@ -191,10 +161,10 @@ function run(gatherers, options) {
       });
 
       if (options.flags.saveArtifacts) {
-        saveArtifacts(artifacts);
+        assets.saveArtifacts(artifacts);
       }
       if (options.flags.saveAssets) {
-        saveAssets(options, artifacts);
+        assets.saveAssets(options, artifacts);
       }
 
       return artifacts;
