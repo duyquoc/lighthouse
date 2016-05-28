@@ -19,6 +19,7 @@
 const Auditor = require('./auditor');
 const Scheduler = require('./scheduler');
 const Aggregator = require('./aggregator');
+const log = require('./lib/log.js');
 
 const GATHERER_CLASSES = [
   require('./gatherers/url'),
