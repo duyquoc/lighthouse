@@ -18,7 +18,7 @@
 'use strict';
 
 const Aggregate = require('../aggregate');
-const viewport = require('../../audits/mobile-friendly/viewport')
+const viewport = require('../../audits/mobile-friendly/viewport');
 
 class MobileFriendly extends Aggregate {
 
